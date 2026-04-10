@@ -1,5 +1,6 @@
 #!/bin/bash
-cd ~/automations/zingg-stats
+cd ~/zingg-stats
 source venv/bin/activate
-python zingg_daily_stats.py >> ~/automations/zingg-stats/stats.log 2>&1
+python zingg_daily_stats.py >> ~/zingg-stats/stats.log 2>&1
+python visualise.py >> ~/zingg-stats/stats.log 2>&1
 deactivate
