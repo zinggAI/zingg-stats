@@ -2,7 +2,15 @@
 
 # Zingg GitHub Stats
 
-Fetches daily traffic and repository stats from [zinggAI/zingg](https://github.com/zinggAI/zingg), appends them to monthly CSV files in [zinggAI/github_traffic](https://github.com/zinggAI/github_traffic), and posts a summary to the `#repo-stats` Slack channel.
+Github provides repository analytics of only last 14 days. If you are an open source maintainer evangelising your software, this quickly becomes limiting. 
+This repo is meant for those of us who would like to understand where people are discovering the repo, who is driving traffic, how the clones are gorowing etc.
+
+The main script fetches daily traffic and repository stats from a given open source repository, appends them to CSV files organised by month, saves them in configurable repository and posts a summary to a Slack channel of your choice.
+
+In the case of Zingg: 
+open source repo [zinggAI/zingg](https://github.com/zinggAI/zingg)
+stats repo [zinggAI/github_traffic](https://github.com/zinggAI/github_traffic), 
+`#repo-stats` Slack channel
 
 ---
 
