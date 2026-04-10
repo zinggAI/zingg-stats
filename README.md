@@ -29,11 +29,11 @@ README.md              — this file
 
 ## Setup
 
-### 1. Clone or copy the script
+### 1. Clone or copy the scripts
 
 ```bash
 mkdir ~/zingg-stats && cd ~/zingg-stats
-# copy zingg_daily_stats.py here
+# copy zingg_daily_stats.py and visualise.py here
 ```
 
 ### 2. Create a virtual environment
@@ -140,6 +140,58 @@ All CSV files are written to [zinggAI/github_traffic](https://github.com/zinggAI
 The script deduplicates on the key columns before appending, so running it multiple times in a day is safe — no duplicate rows will be written.
 
 ---
+---
+
+## Visualization
+
+`visualize.py` reads the monthly CSV files from [zinggAI/github_traffic](https://github.com/zinggAI/github_traffic), generates charts, and uploads them to `#repo-stats` on Slack.
+
+### Additional dependency
+
+```bash
+source ~/zingg-stats/venv/bin/activate
+pip install pandas matplotlib
+```
+
+### Charts generated
+
+| Chart | Description |
+|---|---|
+| **Traffic: Views & Clones** | Dual-panel bar chart — daily page views + unique visitors (top), git clones + unique cloners (bottom) |
+| **Repository: Stars & Forks** | Dual-axis line chart — stars on left axis, forks on right axis |
+| **Top Referrers** | Horizontal bar chart — total views per referrer aggregated across selected months |
+| **Top Paths** | Horizontal bar chart — most visited paths aggregated across selected months |
+
+### Usage
+
+```bash
+# current month only (default)
+python visualize.py --config ~/.zingg/config.py
+
+# last N months automatically
+python visualize.py --config ~/.zingg/config.py --last 3
+
+# specific months manually
+python visualize.py --config ~/.zingg/config.py --month 2026-02 --month 2026-03 --month 2026-04
+```
+
+### Slack permissions
+
+The Slack bot needs one additional scope to upload images. Go to [api.slack.com/apps](https://api.slack.com/apps) → your app → **OAuth & Permissions** → **Bot Token Scopes** → add `files:write`, then reinstall the app to the workspace.
+
+### Running daily via cron
+
+`run.sh` already calls both scripts in sequence — no changes needed. It runs `zingg_daily_stats.py` first to collect and store data, then `visualize.py --last 3` to generate and upload charts.
+
+If you want to run the visualizer on a different schedule from the data collector (e.g. collect daily but chart weekly), you can split them into separate cron entries:
+
+```
+# collect stats every day at 9am
+0 9 * * * /Users/YOUR_USERNAME/zingg-stats/venv/bin/python /Users/YOUR_USERNAME/zingg-stats/zingg_daily_stats.py --config ~/.zingg/config.py >> ~/zingg-stats/stats.log 2>&1
+
+# generate charts every Monday at 9am
+0 9 * * 1 /Users/YOUR_USERNAME/zingg-stats/venv/bin/python /Users/YOUR_USERNAME/zingg-stats/visualize.py --config ~/.zingg/config.py --last 3 >> ~/zingg-stats/stats.log 2>&1
+```
 
 ## GitHub API limits
 
@@ -163,3 +215,12 @@ Run `/invite @Zingg Stats Bot` in `#repo-stats`.
 
 **Cron not running**
 Check `stats.log` for errors. Make sure the path in crontab is a full absolute path with no `~/` shorthand.
+
+**`files:write` missing scope error**
+Add `files:write` to your bot's OAuth scopes at [api.slack.com/apps](https://api.slack.com/apps) and reinstall the app.
+
+**Charts show no data**
+The CSV files for the requested months don't exist yet in `zinggAI/github_traffic`. Run `zingg_daily_stats.py` first to populate them.
+
+**`ModuleNotFoundError: pandas` or `matplotlib`**
+Run `pip install pandas matplotlib` inside the virtual environment.
