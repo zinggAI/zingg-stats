@@ -41,9 +41,17 @@ def gh_get(path, cfg):
 # ── GitHub storage repo (read/write CSVs) ────────────────────────────────────
 
 def csv_filename(prefix):
-    """e.g. views_2026_04.csv — rotates every month"""
+    """e.g. referrers/referrers_2026_04.csv — rotates every month"""
     now = datetime.now(timezone.utc)
-    return f"{prefix}_{now.year}_{now.month:02d}.csv"
+    folder_map = {
+        "views": "views",
+        "clones": "clones",
+        "referrers": "referrers",
+        "paths": "paths",
+        "repo_stats": "repo_stats",
+    }
+    folder = folder_map.get(prefix, prefix)
+    return f"{folder}/{prefix}_{now.year}_{now.month:02d}.csv"
 
 
 def fetch_csv_from_github(filename, cfg):
