@@ -1,0 +1,26 @@
+name: Daily Zingg GitHub Stats → Slack
+
+on:
+  schedule:
+    - cron: "0 9 * * *"   # Every day at 9:00 AM UTC
+  workflow_dispatch:        # Also allows manual trigger
+
+jobs:
+  send-stats:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run stats script
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        run: python zingg_daily_stats.py
