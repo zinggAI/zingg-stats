@@ -1,11 +1,12 @@
 # Bunch of nifty automations for analytics
 
+Built with love by the [Zingg AI](https://www.zingg.ai) team, vibe coded through Claude.
+
 # Zingg GitHub Stats
 
 Github provides repository analytics of only last 14 days. If you are an open source maintainer evangelising your software, this quickly becomes limiting. 
 This repo is meant for those of us who would like to understand where people are discovering the repo, who is driving traffic, how the clones are gorowing etc.
 
-Built with love by the [Zingg AI](https://www.zingg.ai) team, vibe coded through Claude.
 
 The main script fetches daily traffic and repository stats from a given open source repository, appends them to CSV files organised by month, saves them in configurable repository and posts a summary to a Slack channel of your choice.
 
