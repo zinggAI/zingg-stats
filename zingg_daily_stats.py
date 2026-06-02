@@ -117,6 +117,21 @@ def append_rows(content_str, fieldnames, new_rows, key_columns):
     return body, added
 
 
+def ensure_csv_exists(filename, content_str, sha, fieldnames, commit_msg, cfg):
+    """Create a missing CSV with only headers so future runs can append."""
+    if sha is not None:
+        return
+
+    if content_str.strip():
+        initial_content = content_str
+    else:
+        out = io.StringIO()
+        csv.DictWriter(out, fieldnames=fieldnames, lineterminator="\n").writeheader()
+        initial_content = out.getvalue()
+
+    push_csv_to_github(filename, initial_content, None, commit_msg, cfg)
+
+
 # ── Per-dataset updaters ──────────────────────────────────────────────────────
 
 def update_views(views, cfg):
@@ -130,6 +145,8 @@ def update_views(views, cfg):
     updated, added = append_rows(content, fieldnames, rows, key_columns=["date"])
     if added:
         push_csv_to_github(filename, updated, sha, f"Add {added} view row(s)", cfg)
+    else:
+        ensure_csv_exists(filename, content, sha, fieldnames, "Initialize views CSV", cfg)
     print(f"  views:      {added} new rows → {filename}")
 
 
@@ -144,6 +161,8 @@ def update_clones(clones, cfg):
     updated, added = append_rows(content, fieldnames, rows, key_columns=["date"])
     if added:
         push_csv_to_github(filename, updated, sha, f"Add {added} clone row(s)", cfg)
+    else:
+        ensure_csv_exists(filename, content, sha, fieldnames, "Initialize clones CSV", cfg)
     print(f"  clones:     {added} new rows → {filename}")
 
 
@@ -160,6 +179,8 @@ def update_referrers(referrers, cfg):
     updated, added = append_rows(content, fieldnames, rows, key_columns=["fetched_date", "referrer"])
     if added:
         push_csv_to_github(filename, updated, sha, f"Add {added} referrer row(s)", cfg)
+    else:
+        ensure_csv_exists(filename, content, sha, fieldnames, "Initialize referrers CSV", cfg)
     print(f"  referrers:  {added} new rows → {filename}")
 
 
@@ -176,6 +197,8 @@ def update_paths(paths, cfg):
     updated, added = append_rows(content, fieldnames, rows, key_columns=["fetched_date", "path"])
     if added:
         push_csv_to_github(filename, updated, sha, f"Add {added} path row(s)", cfg)
+    else:
+        ensure_csv_exists(filename, content, sha, fieldnames, "Initialize paths CSV", cfg)
     print(f"  paths:      {added} new rows → {filename}")
 
 
@@ -194,6 +217,8 @@ def update_repo_stats(info, cfg):
     updated, added = append_rows(content, fieldnames, rows, key_columns=["date"])
     if added:
         push_csv_to_github(filename, updated, sha, f"Add repo stats for {today}", cfg)
+    else:
+        ensure_csv_exists(filename, content, sha, fieldnames, "Initialize repo stats CSV", cfg)
     print(f"  repo_stats: {added} new rows → {filename}")
 
 
@@ -232,11 +257,11 @@ def build_slack_message(info, views, clones, referrers, paths, cfg):
     lines += [
         "",
         f"*CSV Archive ({month})*",
-        f"<{base}/views_{month}.csv|views> · "
-        f"<{base}/clones_{month}.csv|clones> · "
-        f"<{base}/referrers_{month}.csv|referrers> · "
-        f"<{base}/paths_{month}.csv|paths> · "
-        f"<{base}/repo_stats_{month}.csv|repo stats>",
+        f"<{base}/views/views_{month}.csv|views> · "
+        f"<{base}/clones/clones_{month}.csv|clones> · "
+        f"<{base}/referrers/referrers_{month}.csv|referrers> · "
+        f"<{base}/paths/paths_{month}.csv|paths> · "
+        f"<{base}/repo_stats/repo_stats_{month}.csv|repo stats>",
     ]
 
     return "\n".join(lines)

@@ -1,0 +1,61 @@
+# ── mentions_config.txt ───────────────────────────────────────────────────────
+# Configuration for zingg_mentions.py
+# Lines starting with # are comments and are ignored.
+#
+# Sections:
+#   [system_prompt]   — instructions sent to Claude
+#   [search_queries]  — one search query per line (used as web search hints)
+#   [exclude]         — keywords that mark a result as irrelevant (lowercase)
+#   [keywords]        — additional product/brand keywords to search for
+# ─────────────────────────────────────────────────────────────────────────────
+
+[system_prompt]
+You are a monitoring assistant tracking web mentions of specific open source data tools.
+
+For each keyword you are given, search the web for recent mentions and return ONLY results
+that are relevant to the software product — not people, businesses, or places that share the name.
+
+For each relevant result return a JSON array with objects containing:
+  - keyword: which keyword this result is for
+  - title: the page or post title
+  - url: the full URL
+  - source: where it was found (GitHub / Reddit / HackerNews / Twitter / LinkedIn / YouTube / Blog / News / Other)
+  - summary: 1-2 sentence description of what the mention says
+  - sentiment: "positive" / "neutral" / "negative"
+  - date: publication date as YYYY-MM-DD if available, otherwise null
+
+Return ONLY valid JSON. No preamble, no markdown fences. Empty array [] if nothing relevant found.
+
+[search_queries]
+"{keyword}" data matching
+"{keyword}" deduplication
+"{keyword}" open source
+site:github.com "{keyword}"
+site:news.ycombinator.com "{keyword}"
+site:medium.com "{keyword}"
+site:dev.to "{keyword}"
+site:twitter.com "{keyword}" data
+site:linkedin.com "{keyword}"
+site:youtube.com "{keyword}"
+
+[exclude]
+adrian zingg
+thomas zingg
+peter zingg
+martin zingg
+hans zingg
+zingg ag
+zingg gmbh
+zingg architecture
+zingg design
+zingg artist
+zingg gallery
+zingg family
+zingg surname
+zingg real estate
+
+[keywords]
+zingg
+master data management mdm
+entity resolution
+identity resolution
